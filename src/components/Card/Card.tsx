@@ -1,8 +1,9 @@
 import { IonIcon, IonToggle } from '@ionic/react';
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { endpoint, IDevice } from '../../pages/Home';
+import { IDevice } from '../../pages/Home';
 import axios from 'axios';
+import { Storage } from '@capacitor/storage';
 
 interface CardTheme {
   backgroundColor?: string;
@@ -17,10 +18,20 @@ export interface ICardProps extends IDevice {
 }
 
 export const Card: React.FC<ICardProps> = ({ icon, title, theme, address, id, model, place }) => {
+  const [ip, setIp] = useState('');
+
+  const getIp = async () => {
+    const { value } = await Storage.get({ key: 'ip' });
+
+    return value;
+  };
+
   const [active, setActive] = useState(false);
 
   const togglePower = (on: boolean) => {
-    axios.get(`${endpoint}/status?ip=${address}&on=${on}`).then(() => {})
+    getIp().then(ipLocal => {
+      axios.get(`http://${ipLocal}/status?ip=${address}&on=${on}`).then(() => {});
+    });
   };
 
   return (
@@ -55,7 +66,7 @@ export const StyledCard = styled.div<CardTheme>`
   overflow: hidden;
 
   ion-icon {
-    color: ${(props) => (props.active ? props.textColor : 'rgba(255, 255, 255, .2)')};
+    color: ${props => (props.active ? props.textColor : 'rgba(255, 255, 255, .2)')};
     z-index: 2;
   }
 
@@ -73,17 +84,17 @@ export const StyledCard = styled.div<CardTheme>`
     position: absolute;
     width: 100%;
     height: 100%;
-    background: ${(props) => props.backgroundColor};
+    background: ${props => props.backgroundColor};
     top: 0;
     left: 0;
-    transform: ${(props) => (props.active ? 'translateX(0%);' : 'translateX(-100%)')};
+    transform: ${props => (props.active ? 'translateX(0%);' : 'translateX(-100%)')};
     transition: transform 0.2s ease-in-out;
     z-index: 1;
   }
 `;
 
 const CardInformations = styled.div<CardTheme>`
-  color: ${(props) => (props.active ? props.textColor : 'rgba(255, 255, 255, .2)')};
+  color: ${props => (props.active ? props.textColor : 'rgba(255, 255, 255, .2)')};
   flex: 1;
   z-index: 2;
 

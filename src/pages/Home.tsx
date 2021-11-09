@@ -4,7 +4,8 @@ import { Card, StyledCard } from '../components/Card/Card';
 import { tvOutline, beerOutline } from 'ionicons/icons';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-export const endpoint = 'http://127.0.0.1:3000';
+import { Storage } from '@capacitor/storage';
+import { IonButton, IonAlert } from '@ionic/react';
 export interface IDevice {
   address: string;
   id: string;
@@ -14,11 +15,28 @@ export interface IDevice {
 
 const Home: React.FC = () => {
   const [devices, setDevices] = useState([]);
+  const [alert, openAlert] = useState(false);
+  const [ip, setIp] = useState('');
+
+  const getIp = async () => {
+    const { value } = await Storage.get({ key: 'ip' });
+
+    return value;
+  };
+
+  const setIpLocalStorage = async (ip: string) => {
+    await Storage.set({
+      key: 'ip',
+      value: ip
+    });
+    setIp(ip);
+  };
 
   useEffect(() => {
-    // axios.get('http://localhost:3000/status?ip=192.168.18.21').then((res) => {
-    axios.get(`${endpoint}/discover`).then((res) => {
-      setDevices(res.data.devices);
+    getIp().then(ipLocal => {
+      axios.get(`http://${ipLocal}/discover`).then(res => {
+        setDevices(res.data.devices);
+      });
     });
   }, []);
 
@@ -39,13 +57,46 @@ const Home: React.FC = () => {
                   backgroundColor:
                     device.place === 'sala'
                       ? 'linear-gradient(90deg, rgba(255,255,255,1) 0%, rgb(162 160 160) 100%)'
-                      : 'linear-gradient(90deg, rgba(250, 219, 121, 1) 0%, rgba(224, 172, 8, 1) 100%)',
+                      : 'linear-gradient(90deg, rgba(250, 219, 121, 1) 0%, rgba(224, 172, 8, 1) 100%)'
                 }}
                 {...device}
               />
             );
           })}
-          {/* <PageConfig>Configurações</PageConfig> */}
+          <PageConfig>Configurar Ip</PageConfig>
+          <IonButton onClick={() => openAlert(true)} expand='block'>
+            Configurar Ip
+          </IonButton>
+          <IonAlert
+            isOpen={alert}
+            onDidDismiss={() => openAlert(false)}
+            cssClass='my-custom-class'
+            header={'Prompt!'}
+            inputs={[
+              {
+                name: 'ip',
+                value: `${ip}`,
+                type: 'url',
+                placeholder: 'Entre com o ip do servidor'
+              }
+            ]}
+            buttons={[
+              {
+                text: 'Cancelar',
+                role: 'cancel',
+                cssClass: 'secondary',
+                handler: e => {
+                  console.log('Confirm Cancel', e);
+                }
+              },
+              {
+                text: 'Ok',
+                handler: inputValue => {
+                  setIpLocalStorage(inputValue.ip);
+                }
+              }
+            ]}
+          />
         </StyledContent>
       </IonContent>
     </IonPage>
@@ -62,7 +113,7 @@ const PageArea = styled.p`
   margin-bottom: 12px;
 `;
 
-const PageConfig = styled.p`
+const PageConfig = styled.button`
   font-size: 14px;
   margin-bottom: 12px;
   margin-top: 50px;
