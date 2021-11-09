@@ -4,7 +4,7 @@ import { Card, StyledCard } from '../components/Card/Card';
 import { tvOutline, beerOutline } from 'ionicons/icons';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-export const endpoint = 'http://localhost:3000';
+export const endpoint = 'http://127.0.0.1:3000';
 export interface IDevice {
   address: string;
   id: string;
@@ -45,7 +45,7 @@ const Home: React.FC = () => {
               />
             );
           })}
-          <PageConfig>Configurações</PageConfig>
+          {/* <PageConfig>Configurações</PageConfig> */}
         </StyledContent>
       </IonContent>
     </IonPage>
