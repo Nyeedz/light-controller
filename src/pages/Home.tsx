@@ -63,14 +63,13 @@ const Home: React.FC = () => {
               />
             );
           })}
-          <PageConfig>Configurar Ip</PageConfig>
+          {/* <PageConfig>Configurar Ip</PageConfig> */}
           <IonButton onClick={() => openAlert(true)} expand='block'>
             Configurar Ip
           </IonButton>
           <IonAlert
             isOpen={alert}
             onDidDismiss={() => openAlert(false)}
-            cssClass='my-custom-class'
             header={'Prompt!'}
             inputs={[
               {
