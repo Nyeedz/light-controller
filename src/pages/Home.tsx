@@ -63,7 +63,6 @@ const Home: React.FC = () => {
               />
             );
           })}
-          {/* <PageConfig>Configurar Ip</PageConfig> */}
           <IonButton onClick={() => openAlert(true)} expand='block'>
             Configurar Ip
           </IonButton>
@@ -123,6 +122,10 @@ const StyledContent = styled.div`
 
   ${StyledCard} + ${StyledCard} {
     margin-top: 16px;
+  }
+
+  ion-button {
+    margin-top: 32px;
   }
 `;
 

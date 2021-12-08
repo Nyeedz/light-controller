@@ -28,9 +28,9 @@ export const Card: React.FC<ICardProps> = ({ icon, title, theme, address, id, mo
 
   const [active, setActive] = useState(false);
 
-  const togglePower = (on: boolean) => {
-    getIp().then(ipLocal => {
-      axios.get(`http://${ipLocal}/status?ip=${address}&on=${on}`).then(() => {});
+  const togglePower = (id: any) => {
+    getIp().then((ipLocal) => {
+      axios.get(`http://${ipLocal}:80/toggleLight?id=${id}`).then(() => {});
     });
   };
 
